@@ -3,9 +3,6 @@ from collections import defaultdict
 import csv
 import random
 
-dct = "data/dict.opcorpora.xml"
-corp = "data/annot.opcorpora.no_ambig_strict.xml"
-
 forms = defaultdict(list)
 freqs = defaultdict(int)
 dictionary = {}
@@ -32,7 +29,7 @@ def fix_word(word):
 
 
 def read_lemmas():
-    root = ET.ElementTree(file=dct).getroot()
+    root = ET.ElementTree(file="data/dict.opcorpora.xml").getroot()
     for lem in root.find('lemmata'):
         l = lem.find('l')
         dictionary[int(lem.get('id'))] = (fix_word(l.get('t')), l.find('g').get('v'))
@@ -60,7 +57,7 @@ def read_forms_odict():
 
 
 def read_forms():
-    tree = ET.ElementTree(file=dct)
+    tree = ET.ElementTree(file="data/dict.opcorpora.xml")
     root = tree.getroot()
     for lem in root.find('lemmata'):
         id = int(lem.get('id'))
@@ -79,7 +76,7 @@ def read_forms_conll():
 
 
 def read_corpus_openc():
-    tree = ET.ElementTree(file=corp)
+    tree = ET.ElementTree(file="data/annot.opcorpora.no_ambig_strict.xml")
     root = tree.getroot()
     for text in root.findall('text'):
         for paragraph in text.find('paragraphs').findall('paragraph'):
@@ -119,9 +116,6 @@ def resolve(word):
             ml, mp, mf = lemma[0], lemma[1], freqs[lemma]
 
     if mf == -1:
-        print(111)
-        print(lemmas)
-        # print()
         lemma = random.choice(lemmas)
         return lemma
     else:
@@ -140,7 +134,7 @@ def to_lem(word):
     return word
 
 
-def process_text():
+def run():
     file = open('in.txt', "r")
     out = open("out.txt", "w")
     for line in file:
@@ -176,14 +170,11 @@ def process_text():
                     lemma, post = word, "V"
 
                 if post == "NI" and (
-                        lemma.endswith("ой") or lemma.endswith("ое") or lemma.endswith("ый") or lemma.endswith(
-                    "ая") or lemma.endswith("ые") or lemma.endswith("ий") or lemma.endswith("ей") or lemma.endswith(
-                    "ому") or lemma.endswith("ему")):
+                        lemma.endswith("ой") or lemma.endswith("ое") or lemma.endswith("ый") or lemma.endswith("ая") or lemma.endswith("ые") or lemma.endswith("ий") or lemma.endswith("ей") or lemma.endswith("ому") or lemma.endswith("ему")):
                     post = "A"
 
                 if len(word) > 2 and (
-                        (word.endswith("о") and not word.endswith("ое")) or word.endswith("а") or word.endswith(
-                    "я") or word.endswith("у") or word.endswith("ю") or word.endswith("и")) and post == "A":
+                        (word.endswith("о") and not word.endswith("ое")) or word.endswith("а") or word.endswith("я") or word.endswith("у") or word.endswith("ю") or word.endswith("и")) and post == "A":
                     lemma, post = word, "ADV"
 
                 if post == "V":
@@ -205,16 +196,9 @@ def process_text():
 
 
 if __name__ == "__main__":
-    print(1)
     read_lemmas()
-    print(2)
     read_forms()
-    print(3)
     read_forms_odict()
-    print(3.5)
-    # read_forms_conll()
-    print(4)
     read_corpus_openc()
     read_corpus_conll()
-    print(5)
-    process_text()
+    run()
