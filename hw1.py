@@ -106,7 +106,7 @@ def read_corpus_conll():
 def resolve(word):
     lemmas = forms[word]
     if len(lemmas) == 1:
-        return lemmas[0][0], lemmas[0][1]
+        return lemmas[0]
 
     ml, mp, mf = "", "", -1
     for lemma in lemmas:
